@@ -7,4 +7,4 @@ Before running script: install postgresql 11 and above, create DB with name - fl
 
 If you want to run script as system service, create an unit file.
 
-/b Attention!/b At the moment, the control of the depth of data storage in the database is not implemented.
+Attention! At the moment, the control of the depth of data storage in the database is not implemented.
