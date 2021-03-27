@@ -17,10 +17,11 @@ usage: flowd.py [-h] [--dbuser DBUSER] [--dbuser_pass DBUSER_PASS]
 Description of arguments
 
 optional arguments:
-  -h, --help                   show this help message and exit
-  --dbuser DBUSER              postgresql DB user name (default: "flow")
-  --dbuser_pass DBUSER_PASS    postgresql DB user password (default: "12345")
-  --dbhost DBHOST              address postgresql DB server (default: "localhost")
-  --dbport DBPORT              postgresql DB server port (default: "5432")
-  --bindaddr BINDADDR          flow listen address (default: "192.168.88.224")
-  --bindport BINDPORT          flow listen port (default: "2525")
+  -h, --help            show this help message and exit
+  --dbuser DBUSER       postgresql DB user name (default: "flow")
+  --dbuser_pass DBUSER_PASS
+                        postgresql DB user password (default: "12345")
+  --dbhost DBHOST       address postgresql DB server (default: "localhost")
+  --dbport DBPORT       postgresql DB server port (default: "5432")
+  --bindaddr BINDADDR   flow listen address (default: "192.168.88.224")
+  --bindport BINDPORT   flow listen port (default: "2525")
