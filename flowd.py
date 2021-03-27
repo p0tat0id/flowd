@@ -3,9 +3,35 @@
 
 import socket, struct, datetime, psycopg2
 
+dbname="flow"
+dbuser="flow"
+dbuser_pass="12345"
+dbhost="localhost"
+dbport="5432"
+
+def try_connect_to_db():
+    try:
+        con = psycopg2.connect(
+        database=dbname, 
+        user=dbuser, 
+        password=dbuser_pass, 
+        host=dbhost, 
+        port=dbport
+        )
+        return True
+    except:
+        return FALSE
+    con.close()
+
+if (try_connect_to_db()):
+    print('Error connecting to DB: ',dbname,', port:',dbport)
+    raise SystemExit
+
+raise SystemExit
+
 #функция создает таблицу для хранения данных netflow
 def create_table():
-    #соединяемся с БД
+    #connect to DB
     con = psycopg2.connect(
       database="flow", 
       user="flow", 
@@ -74,12 +100,12 @@ RECORD = 48
 #Создаем сокет UDP и запускаем прослушиватель
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #адрес и порт на котором ждем данные
-sock.bind(('192.168.88.251', 2525))
+sock.bind(('192.168.88.224', 2525))
 
 datagram, addr = sock.recvfrom(1500)
     
 while True:
-    #Принимаем данные с маршрутизатора
+    #take datagram from router
     datagram, addr = sock.recvfrom(1500)
     
     #struct.unpack - распаковывает строку, содержащую упакованные данные структуры Си в соответствие с данными форматов 
@@ -113,7 +139,6 @@ while True:
             nfdata['daddr'] = socket.inet_ntoa(datagram[base+4:base+8])
             nfdata['pcount'] = data[0]
             nfdata['bcount'] = data[1]
-            #nfdata['proto'] = data[3]
             nfdata['sport'] = data[4]
             nfdata['dport'] = data[5]
             #print (nfdata['saddr'],':',nfdata['sport'],'--->',nfdata['daddr'],':',nfdata['dport'],'__ID proto:',protoid,'__пакетов:',nfdata['pcount'],'__байт:',nfdata['bcount'],epoch)    
