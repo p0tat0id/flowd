@@ -2,13 +2,59 @@
 # netflow ver. 5 collector
 
 #need install psycopg2 for manipulating postgresql (pip or packet manager)
-import socket, struct, datetime, psycopg2
+import socket, struct, datetime, psycopg2, argparse
 
+#command-line arguments parse
+parser = argparse.ArgumentParser(description='Description of arguments')
+parser.add_argument(
+    '--dbuser',
+    type=str,
+    default="flow",
+    help='postgresql DB user name (default: "flow")'
+)
+parser.add_argument(
+    '--dbuser_pass',
+    type=str,
+    default="12345",
+    help='postgresql DB user password (default: "12345")'
+)
+parser.add_argument(
+    '--dbhost',
+    type=str,
+    default="localhost",
+    help='address postgresql DB server (default: "localhost")'
+)
+parser.add_argument(
+    '--dbport',
+    type=str,
+    default="5432",
+    help='postgresql DB server port (default: "5432")'
+)
+parser.add_argument(
+    '--bindaddr',
+    type=str,
+    default="192.168.88.224",
+    help='flow listen address (default: "192.168.88.224")'
+)
+parser.add_argument(
+    '--bindport',
+    type=str,
+    default=2525,
+    help='flow listen port (default: "2525")'
+)
+
+argprs = parser.parse_args()
+
+dbuser=argprs.dbuser
+dbuser_pass=argprs.dbuser_pass
+dbhost=argprs.dbhost
+dbport=argprs.dbport
+bindaddr=argprs.bindaddr
+bindport=argprs.bindport
 dbname="flow"
-dbuser="flow"
-dbuser_pass="12345"
-dbhost="localhost"
-dbport="5432"
+
+
+#parsing_arguments()
 
 #function try connect to DB and return TRUE if OK or False if not connect.
 def try_connect_to_db():
@@ -46,7 +92,7 @@ def run_flow_v5_collector():
     HEADER = 24
     RECORD = 48
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(('192.168.88.224', 2525))
+    sock.bind((bindaddr, bindport))
     datagram, addr = sock.recvfrom(1500)    
     while True:
         datagram, addr = sock.recvfrom(1500)
@@ -65,7 +111,7 @@ def run_flow_v5_collector():
                 nfdata['bcount'] = data[1]
                 nfdata['sport'] = data[4]
                 nfdata['dport'] = data[5]
-                print (nfdata['saddr'],':',nfdata['sport'],'--->',nfdata['daddr'],':',nfdata['dport'],'__ID proto:',protoid,'__пакетов:',nfdata['pcount'],'__байт:',nfdata['bcount'],epoch)    
+                #debug_str#print (nfdata['saddr'],':',nfdata['sport'],'--->',nfdata['daddr'],':',nfdata['dport'],'__ID proto:',protoid,'__пакетов:',nfdata['pcount'],'__байт:',nfdata['bcount'],epoch)    
                 cur.execute(
                 "INSERT INTO rawflow (srcip, srcprt, dstip, dstprt, numbyte, flowtime) VALUES (%s, %s, %s, %s, %s, %s)", (nfdata['saddr'], nfdata['sport'], nfdata['daddr'], nfdata['dport'], nfdata['bcount'], epoch))
                 con.commit()  
